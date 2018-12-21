@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>test Map</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<script
+  src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+ <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+ <link rel="stylesheet" href="css/main.css" />
+
+
+ <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
+
+ <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.2/xlsx.full.min.js"></script>-->
+ <script src="js/xlsx.core.min.js"></script>
+ <script src="js/FileSaver.min.js"></script>
+ <script src ="js/Blob.js"></script>
+
+<!--<link rel="stylesheet" href="js/uswds-1.3.0/css/uswds.min.css">
+<script src="js/uswds-1.3.0/js/uswds.min.js"></script>-->
+
+</head>
+<body>
+
+<div id="mapcontainer">
+
+	 <div class="headerbars col-md-4 col-sm-2 col-xs-3 col-lg-4">
+		<div class="containter">
+			<div class="row">
+				<div class="col-md-4">
+					<img class="testlogo" src="img/Horizontal_RGB_600.png">
+				</div>
+				<div class="col-md-4">
+					<span class="testlogo">AMERICAN SCHOOLS<br>& HOSPITALS ABROAD </span>
+				</div>
+				<div class="col-md-4">
+					<br><span class="text-title">Awards: FY 1978-2016 </span>
+				</div>
+			</div>
+		 </div>
+	</div>
+	<div id="mapid"></div>
+
+
+</div>
+<script src="data/Admin0.geojson" type="text/javascript"></script>
+<script src="data/testtable.geojson" type="text/javascript"></script>
+<script type="text/javascript">
+//Add Map
+var map = L.map('mapid', {worldCopyJump:true}).setView([0,0], 3);
+
+L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibW5hamFycm8iLCJhIjoia3h6MUNBZyJ9.ZTwY6_c7nym9bshqjdAopA', {
+			maxZoom: 10,
+			minZoom: 2,
+			attribution: 'Data Source:<a href="https://www.test.gov/sites/default/files/documents/1866/FY%202015%20Awards%20USOs%20OSIs%20and%20Project%20Descriptions.pdf" target="_blank">test</a>, Created by <a href="https://sites.google.com/a/test.gov/test/" target="_blank"><span class="testred">Geo</span><span class="testblue">Center</span></a>| Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+			id: 'mapbox.light'
+		}).addTo(map);
+
+
+
+//for spreadsheet hearders and creation
+const ALPHA = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P',
+'Q','R','S','T','U','V','W','X','Y','Z'];
+function _calculateCurrentCellReference(index, lineNumber){
+    return (index > 25) ? ALPHA[Math.floor((index/26)-1)] + ALPHA[index % 26] + lineNumber : ALPHA[index] + lineNumber;
+  }
+
+function Exceldownload(args) {
+		var data=testtable.features
+		var keys = Object.keys(data[0].properties);
+		var fields=[];
+		for(var i = 0; i < keys.length-4 ; i++){
+			fields.push({'displayName':keys[i]})
+		};
+		var testobjects= [];
+		data.forEach(function(item) {
+		//console.log(item.properties.Country);
+			if(item.properties.Country == args.selectCountry){
+
+
+            testobjects.push(item.properties);
+			}
+        });
+		//console.log(fields);
+
+
+		var name="testing";
+		//console.log(fields2);
+		var spreadsheetName	= 'Report';
+		 var lineNum = 1;
+
+		  var worksheetColumns = [];
+
+
+			for(var i = 0; i < fields.length; i++){
+				//console.log(fields[i].displayName);
+				if(fields[i].displayName=='SummaryProjectDescription'){
+					worksheetColumns.push( {wch: 80} );
+				}else{
+					worksheetColumns.push( {wch: 10} );
+				}
+			  }
+
+//Creating workbook
+			  var workbook = {
+				SheetNames: [spreadsheetName],
+				Sheets: {
+				  'Report': {
+					'!ref': 'A1:',
+					'!cols': worksheetColumns
+				  }
+				}
+			  };
+
+//Adding Headers
+		for(var i = 0; i < fields.length; i++){
+
+				worksheetColumns.push( {wch: 25} );
+			var cleanheaders= '';
+			if (fields[i].displayName=='APS'){
+				cleanheaders = 'Program Year'
+			}
+			else if(fields[i].displayName=='OverseasInstitute'){
+				cleanheaders = 'Overseas Institute'
+			}
+			else if(fields[i].displayName=='SummaryProjectDescription'){
+				cleanheaders = 'Summary Project Description';
+			}
+			else if (fields[i].displayName=='AwardAmount'){
+				cleanheaders = 'Award Amount';
+			}
+			else{
+				cleanheaders = fields[i].displayName;
+			}
+			var currentCell = self._calculateCurrentCellReference(i, lineNum);
+				workbook.Sheets[spreadsheetName][currentCell] = {
+					t: "s",
+					v: cleanheaders,
+					s: {
+						font: { sz: "11", bold: true },
+						fill: {fgColor: {rgb: 'e5b8b7'}},
+						alignment: { wrapText: true, vertical: 'center', horizontal:'center' },
+						border: {
+							left: {style: 'thin', color: {auto: 1}},
+							right: {style: 'thin', color: {auto: 1}},
+							top: {style: 'thin', color: {auto: 1}},
+							bottom: {style: 'thin', color: {auto: 1}}
+						  }
+						}
+				};
+		  }
+
+//Adding Data
+		  lineNum++;
+
+      testobjects.forEach(function(offer) {
+        var fieldMap = offer;
+		//console.log(fieldMap);
+        for(var i = 0; i < fields.length; i++){
+          var displayValue = fieldMap[fields[i].displayName];
+		  //console.log(displayValue);
+          var currentCell = self._calculateCurrentCellReference(i, lineNum);
+          workbook.Sheets[spreadsheetName][currentCell] = {
+            t: "s",
+            v: displayValue,
+            s: { font: { sz: "9", bold: false },
+              alignment: { wrapText: true, vertical: 'bottom', horizontal:'left' },
+              fill: {fgColor: {rgb: 'ffffff'}},
+              border: {
+                left: {style: 'thin', color: {auto: 1}},
+                right: {style: 'thin', color: {auto: 1}},
+                top: {style: 'thin', color: {auto: 1}},
+                bottom: {style: 'thin', color: {auto: 1}}
+              }
+            }
+          };
+        }
+        lineNum++;
+      });
+	  var lastColumnInSheet = fields.length-1;
+      var endOfRange = self._calculateCurrentCellReference(lastColumnInSheet, lineNum);
+      workbook.Sheets[spreadsheetName]['!ref'] += endOfRange;
+
+//Writing Workbook
+		var workbookOutput = XLSX.write(workbook, { bookType:'xlsx', bookSST:false, type: 'binary' });
+
+		  var s2ab = function(s) {
+			var buffer = new ArrayBuffer(s.length);
+			var view = new Uint8Array(buffer);
+			for (var i = 0; i !== s.length; ++i) {
+			  view[i] = s.charCodeAt(i) & 0xFF;
+			}
+			return buffer;
+		  };
+//Download xlsx
+
+		  saveAs(new Blob([s2ab(workbookOutput)], { type:"application/octet-stream" }), args.filename);
+//Google Analytics
+		  var url= args.filename;
+		  ga("send", "event", "exceldownload", url, {
+			  "transport": "beacon",
+			  "hitCallback": function() {
+				//document.location = url;
+			  }
+			});
+};
+
+var info = L.control();
+
+info.onAdd = function (map) {
+    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+    this.update();
+	L.DomEvent.disableClickPropagation(this._div);
+    return this._div;
+};
+
+info.update3 = function (props3){
+	//console.log(desc);
+	var photolink='';
+
+	if(props3.image=='#N/A'){photolink='<br>';}else{photolink = '<div class="row"><div class= "col-md-12"><a href="'+props3.web+'" target="_blank"><img class="img-responsive" src="'+props3.image+ '"></a></div></div><br>'};
+
+	var PopupInfo3 = '<div class="row"><div class="col-md-2"><button type="button" class="btn btn-secondary btn-sm text-center" onclick="info.update2({ NAME: \''+props3.NAME+'\',insts: \''+props3.insts.replace(/'/g, "\\'")+'\' });"><span class="glyphicon glyphicon-chevron-left"></span>back</button></div><div class= "col-md-12 text-center"><h4>test Awards</h4></div></div><br>' +  (props3.desc ?
+        '<div class="row"><div class= "col-md-4"> <b>Award: </b></div><div class= "col-md-8 descript">'+ props3.award+'</b></div></div><br><div class="row"><div class= "col-md-4"> <b>Award Amount: </b></div><div class= "col-md-8 descript">'+ props3.awardAmount+'</b></div></div><br><div class="row"><div class= "col-md-4 "> <b>Description: </b></div></div><div class="row"><div class= "col-md-12 descript"><br>' + decodeURI(props3.desc) + '</div></div><br>'+ photolink
+        : '<b>Click on a country</b> on the map to get more information. The number on the points represent the number of awards in that area.');
+
+	this._div.innerHTML = PopupInfo3;
+}
+
+info.update2 = function (props2){
+
+	var PopupInfo2 = '<div class="row"><div class="col-md-2"><button type="button" class="btn btn-secondary btn-sm text-center" onclick="info.update({ NAME: \''+props2.NAME+'\' });"><span class="glyphicon glyphicon-chevron-left"></span>back</button></div><div class= "col-md-12 text-center"><h4>test Awards</h4></div></div><br>' +  (props2.insts ?
+        '<div class="row"><div class= "col-md-4"><b>Institute: </b></div><div class= "col-md-8 descript">'+ props2.insts +'</b></div></div><br> <div class="row"><div class= "col-md-4 text-center"> <b>Awards:'
+        : '<b>Click on a country</b> on the map to get more information. The number on the points represent the number of awards in that area.');
+
+			if(props2.insts){
+			var SelectedInstitute = props2.insts;
+			//console.log(testtable.features.length);
+			for ( var i = 0; i < testtable.features.length; i++){
+				//console.log(testtable.features[i].properties.Country);
+				if (testtable.features[i].properties.OverseasInstitute == SelectedInstitute){
+					var awardnumber = testtable.features[i].properties.Award;
+					var descrip = testtable.features[i].properties.SummaryProjectDescription;
+					var image= testtable.features[i].properties.imagelink;
+					var weblink= testtable.features[i].properties.weblink;
+					var year= testtable.features[i].properties.APS;
+					var awardamount = '$' + testtable.features[i].properties.AwardAmount.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+					//console.log(descrip);
+					PopupInfo2 = PopupInfo2 + '</b></div></div><div class="row"><br><div class= "col-md-12 text-center institute"><b><a onclick="info.update3({desc:\''+descrip.replace(/'/g, "\\'")+'\', web:\''+weblink+'\', image:\''+image+'\', award:\''+awardnumber+'\', insts:\''+SelectedInstitute.replace(/'/g, "\\'")+'\', NAME:\''+props2.NAME+'\', awardAmount:\''+awardamount+'\'})">' + awardnumber + '</a></b> FY '+ year +'</div></div>';
+				}
+
+			}
+		}
+		this._div.innerHTML = PopupInfo2 +'<br>';
+}
+// method that we will use to update the control based on feature properties passed
+info.update = function (props) {
+		var hasmatch=0;
+		var PopupInfo = '<div id="wrapper"><div class="row"><div class= "col-md-12 text-center"><h4>test Awards</h4></div></div><br>' +  (props ?
+        '<div class="row"><div class= "col-md-12 text-center"><b> </b></div></div><br /><div class="row"><div class= "col-md-4"><b>Country: </b></div><div class= "col-md-8 descript">' + props.NAME + '</div></div><br> <div class="row"><div class= "col-md-4 text-center"> <b>Institutions:'
+        : '<b>Click on a country</b> to get more information. Countries shaded in blue represent countries with test awards.');
+
+
+	if(props){
+
+		var SelectedCountry = props.NAME;
+
+		for ( var i = 0; i < testtable.features.length; i++){
+
+			if (testtable.features[i].properties.Country == SelectedCountry){
+				hasmatch = 1;
+				var awardnumber = testtable.features[i].properties.Award;
+				var institutes = testtable.features[i].properties.OverseasInstitute;
+				var awarddata= {"award":awardnumber,"institute":institutes}
+
+
+				PopupInfo = PopupInfo + '</b></div></div><div class="row instrow"><br><div class= "col-md-12 text-center institute" id="'+institutes.replace(/'/g, "\\'")+'"><b><a class="institutess" onclick="info.update2({insts:\''+institutes.replace(/'/g, "\\'")+'\', NAME:\''+SelectedCountry+'\'})">' + testtable.features[i].properties.OverseasInstitute + '</a></b></div></div></div>';
+
+			}
+
+		}
+	}
+
+	var ids = {};
+	var buttoncountry ='';
+	if (SelectedCountry=='DEMOCRATIC REPUBLIC OF THE CONGO'){
+		buttoncountry='DRC';
+	}else{buttoncountry=SelectedCountry};
+
+	var exprobuttons = '';
+
+	if (SelectedCountry == "GHANA"||SelectedCountry == "GREECE"||SelectedCountry=="INDIA"||SelectedCountry=="KENYA"||SelectedCountry=="KYRGYZSTAN"||SelectedCountry=="LEBANON"||SelectedCountry=="MOROCCO"||SelectedCountry=="NEPAL"||SelectedCountry=="NIGER"||SelectedCountry=="PAKISTAN"||SelectedCountry=="PHILIPPINES"||SelectedCountry=="SLOVAKIA"||SelectedCountry=="SOMALIA"||SelectedCountry=="SOUTH AFRICA"||SelectedCountry=="TANZANIA"||SelectedCountry=="THAILAND"||SelectedCountry=="TURKEY"||SelectedCountry=="UGANDA"||SelectedCountry=="VIETNAM"||SelectedCountry=="ZAMBIA"||SelectedCountry=="AFGHANISTAN"||SelectedCountry=="ARMENIA"||SelectedCountry=="BANGLADESH"||SelectedCountry=="BULGARIA"||SelectedCountry=="CAMBODIA"||SelectedCountry=="CAMEROON"||SelectedCountry=="CHINA"||SelectedCountry=="CZECH REPUBLIC"||SelectedCountry=="EGYPT"||SelectedCountry=="ETHIOPIA"){ //REMINDER: Add to geojson when updating next!
+
+		exprobuttons='<div class="row text-center"><b>Download</b>:</div><br><div class="row"><div class= "col-md-6 text-center"><button type="button" class="bottonstyle btn btn-secondary btn-sm text-center" onclick="Exceldownload({ filename: \'test_'+SelectedCountry+'_Report.xlsx\',selectCountry:\''+SelectedCountry+'\' });">Excel Report</button></div><div class= "col-md-6 text-center"><a href="img/Country Profile '+SelectedCountry+'.docx" class="bottonstyle btn btn-secondary btn-sm text-center" role="button" aria-pressed="true" onclick="trackOutboundLink(\'https://test.org/test/img/Country Profile '+SelectedCountry+'.docx\')"><span id="profilestyle" >Country Profile</span></a></div></div>';
+
+		}
+	else if(hasmatch == 0){}
+	else{
+
+		exprobuttons='<div class= "col-md-12 text-center"><button type="button" class="bottonstyle btn btn-secondary btn-sm text-center" onclick="Exceldownload({ filename: \'test_'+SelectedCountry+'_Report.xlsx\',selectCountry:\''+SelectedCountry+'\' });">Download '+buttoncountry+' Report</button></div>'
+		;
+		}
+
+	this._div.innerHTML = PopupInfo + (props ? '<br>'+exprobuttons+'<br></div>' : ' '); //<a href="#" onclick="CSVdownload({ filename:
+	$('.instrow').each(function () {
+		$('.instrow:contains("' + $(this).text() + '"):gt(0)').remove();
+	}); //http://stackoverflow.com/questions/18096291/removing-duplicates-from-html-elements
+
+
+
+};
+
+
+var csvdata = testtable.features;
+
+
+//Map Color and opacity styling
+function getColor(x) {
+	  switch(x) {
+		case 1:   return  '#205493';
+		case 2:   return  '';
+		}
+	};
+
+function getOpacity(x) {
+	  switch(x) {
+		case 1:   return  0.6;
+		case 2:   return  0;
+		}
+	};
+
+function getOutline(x) {
+	  switch(x) {
+		case 1:   return  "#FFFFFF";
+		case 2:   return  "#8C7F79";
+		}
+	};
+
+function stylin (feature){
+	return {
+		"color": "rgba(167, 198, 237, 0.6)",
+		"fillOpacity": getOpacity(feature.properties.allyears),
+		"weight": 2,
+		"fillColor": getColor(feature.properties.allyears),
+	}
+}
+//Pop-ups
+function onEachFeature(feature, layer) {
+	layer.on('click', function () {
+		info.update(layer.feature.properties);
+	});
+	layer.on('mouseover', function() {
+		this.setStyle({
+			"color": "rgba(167, 198, 237, 1)",
+			"fillOpacity": getOpacity(feature.properties.allyears),
+			"weight": 5,
+			"fillColor": getColor(feature.properties.allyears)
+		});
+	});
+	layer.on('mouseout', function() {
+		this.setStyle({
+			"color": "rgba(167, 198, 237, 0.6)",
+			"fillOpacity": getOpacity(feature.properties.allyears),
+			"weight": 2,
+			"fillColor": getColor(feature.properties.allyears),
+		});
+	});
+
+
+}
+//Add GeoJson Data
+var datalayer = L.geoJSON(geojsondata, {
+			style: stylin,
+			onEachFeature: onEachFeature
+			});
+
+datalayer.addTo(map);
+
+
+
+
+
+info.addTo(map);
+</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-78762522-4', 'auto');
+  ga('send', 'pageview');
+
+  var trackOutboundLink = function(url) {
+    ga("send", "event", "profiledoc", url, {
+      "transport": "beacon",
+      "hitCallback": function() {
+        //document.location = url;
+      }
+    });
+  };
+
+</script>
+</body>
+</html>

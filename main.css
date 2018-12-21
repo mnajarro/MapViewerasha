@@ -1,0 +1,184 @@
+html, body{
+font-family: Raleway, "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+height: 100%;
+background-color: #205493;
+}
+#mapcontainer{
+	height: 100%;
+	position:relative;
+}
+#mapid {
+    position: relative;
+	
+	
+	height: 100%;
+}
+.headerbars{
+	float:left;
+	position: absolute;
+	top: 5px;
+    left: 50px;
+	color: black;
+	height: 300 px;
+	z-index: 1000;
+	background-color: rgba(207,205,201, 0.8);
+	border-radius: 15px;
+}
+.ASHAlogo{
+	color:#002F6C;
+	font-weight: bold;
+	display: inline-block;
+	padding-top: 12%;
+	line-height: 15px;
+	font-size: 1.7rem;
+}
+.text-title{
+	
+	color: black;/*#6C6463*/
+	font-size: 1.7rem;
+}
+.usaidlogo{
+	width:100%;
+}
+
+@media screen and (max-width: 1750px){
+	.ASHAlogo{
+	color:#002F6C;
+	font-weight: bold;
+	display: inline-block;
+	padding-top: 12%;
+	line-height: 15px;
+	font-size: 1.3rem;
+	}
+	.text-title{
+	
+	color: black;
+	font-size: 1.3rem;
+	}
+}
+@media screen and (max-width: 1400px){
+	.ASHAlogo{
+	color:#002F6C;
+	font-weight: bold;
+	display: inline-block;
+	padding-top: 12%;
+	line-height: 15px;
+	font-size: 1.0rem;
+	}
+	.text-title{
+	
+	color: black;
+	font-size: 1.0rem;
+	}
+}
+
+@media screen and (max-width: 1000px){
+	.usaidlogo{
+		width:100%;
+		margin-left:0;
+		padding-left:0;
+	}
+
+	
+/*	#mapid {
+    position: fixed;
+	
+	
+	height:300px;
+}
+	.usaidlogo{
+	width:50%;
+}
+	.headerbars{
+	
+	position: relative;
+	top: 0px;
+    left: 0px;
+	color: black;
+	height: 100 px;
+	z-index: 1000;
+	background-color: rgba(207,205,201, 0.8);
+	border-radius: 15px;
+}
+	.ASHAlogo{
+	color:#002F6C;
+	font-weight: bold;
+	display: inline-block;
+	padding-top: 12%;
+	line-height: 15px;
+	font-size: 0.9rem;
+	}
+	.text-title{
+	
+	color: black;
+	font-size: 0.9rem;
+	}*/
+}
+
+#popup {
+	width: 20%;
+	height: 50%;
+	
+}
+.info {
+	width: 300px;
+	height: 100%;
+	max-height: 900px;
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+.info a{
+	cursor: pointer
+}
+.info h4 {
+    margin: 0 0 5px;
+    color: #777;
+}
+img {
+    display:block;
+    margin:auto;
+}
+img:hover {
+    opacity: 0.6;
+    transition: opacity .55s ease-in-out;
+    -moz-transition: opacity .55s ease-in-out;
+    -webkit-transition: opacity .55s ease-in-out;
+}​
+
+.descript{
+	font-family: Raleway, "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+	font-style: oblique;
+}
+.institute{
+	font-family: Raleway, "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+	font-weight: 2000;
+}
+.USAIDred{
+	color: #C2113A;
+	font-family: 'Gill Sans', 'Gill Sans MT', Calibri, sans-serif;
+}
+.USAIDblue{
+	color: #002A6C;
+	font-family: 'Gill Sans', 'Gill Sans MT', Calibri, sans-serif;
+}
+.bottonstyle{
+	background-color:#205493;
+	color: white;
+	font-size: 1.4rem;
+}
+.buttonstyle a{
+	color: white;
+}
+#profilestyle{
+	color: white;
+}
+/*.leaflet-control{
+	overflow-y: scroll;
+}
+.leaflet-popup-content { height : 150px; overflow : auto; }*/
